@@ -1,0 +1,115 @@
+*:focus {
+    outline-color: orange;
+}
+
+h1 {
+    color: white;
+    background-color: black;
+    text-align: center;
+}
+
+/* Nav elements */
+
+.nav__ul {
+    display: flex;
+    padding: 0;
+    text-align: center;
+    padding: 0.5rem 0;
+}
+
+.nav__li {
+    list-style: none;
+    flex-basis: 100%;
+    align-items: center;
+}
+
+.nav__li[aria-selected="true"] {
+    fill: green;
+}
+
+.nav__svg {
+    width: 20px;
+}
+
+/* Widget Elements (Loading / Error) */
+.widget__svg {
+    width: 20px;
+}
+
+.widget--absolute {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    place-items: center;
+    place-content: center;
+    background-color: lightgrey;
+    display: flex;
+}
+
+.loading__svg {
+
+}
+
+
+/* Random tab elements */
+
+#random-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+}
+
+#random-section > * {
+    margin: 1rem 0;
+}
+
+.random__h2--left {
+    width: 100%;
+}
+
+.random__img-container {
+    width: 100%;
+    height: 200px;
+    overflow-y: hidden;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.random__img {
+    width: 100%;
+
+}
+
+.btn {
+    padding: .5rem;
+    text-align: center;
+}
+
+.btn > * {
+    margin: 0 .25rem;
+}
+
+.btn--flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn__svg {
+    width: 12px;
+}
+
+.btn--w100 {
+    width: 100%;
+}
+
+.btn--listItem {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+}

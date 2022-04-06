@@ -1,0 +1,10 @@
+@media (min-width: 700px) {
+    nav {
+        display: none;
+    }
+
+    main {
+        display: flex;
+        justify-content: space-between;
+    }
+}
