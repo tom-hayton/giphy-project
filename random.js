@@ -1,86 +1,75 @@
 import { 
-    toggleShow,
     fetchData,
     createWidget,
     getIsEmptyString,
     createGifElement,
-    createSVGFactory,
-    constructElement
+    toggleFunctionsFactory,
 } from './utils.js';
-import { el } from './script.js'
+import { 
+    randomImgContainer,
+    isMobile
+} from './script.js'
 
 export const containerElement = document.querySelector('#random-section');
 
+// const createRefreshBtn = (loadingWidget) => {
+//     const refreshSVGBuilder = createSVGFactory('refresh');
+//     // Create elements
+//     const refreshSVG = refreshSVGBuilder();
+//     const nextSpan = constructElement('span', "Next")
+//     const btnEl = constructElement(
+//         'button', 
+//         "", 
+//         [
+//             {key: "class", value: "btn btn--flex btn--w100 random__btn"},
+//             {key: "aria-label", value: "Next Random Gif"},
+//         ],
+//         el.parentElement,
+//         [refreshSVG, nextSpan]
+//     );
+//     btnEl.addEventListener("click", () => fetchAndDisplay(loadingWidget));
+//     return btnEl;
+// }
 
-
-const init = () => {
-    const refreshSVGBuilder = createSVGFactory('refresh');
-    // Create elements
-    const refreshSVG = refreshSVGBuilder();
-    const nextSpan = constructElement('span', "Next")
-
-    const btnEl = constructElement(
-        'button', 
-        "", 
-        [
-            {key: "class", value: "btn btn--flex btn--w100 random__btn"},
-            {key: "aria-label", value: "Next Random Gif"},
-        ],
-        el.parentElement,
-        [refreshSVG, nextSpan]
-    )
-
-    // const btnEl = document.createElement('button')
-    // // const refreshSVG = refreshSVGBuilder();
-    // // const nextSpan = document.createElement('span');
-
-    // nextSpan.innerText = "Next";
-
-    // btnEl.appendChild(refreshSVG);
-    // btnEl.appendChild(nextSpan);
-
-    // btnEl.setAttribute('class', 'btn btn--flex btn--w100 random__btn');
-    // btnEl.setAttribute('aria-label', 'Next Random Gif');
-    
+export const init = () => {
     const loadingWidget = createWidget('loading');
-    el.appendChild(loadingWidget);
-    // el.parentElement.appendChild(btnEl);
-    btnEl.addEventListener("click", () => fetchAndDisplay(loadingWidget));
-
-    return {btnEl, loadingWidget};
+    randomImgContainer.appendChild(loadingWidget);
+    fetchAndDisplay(loadingWidget);
+    const btnEl = document.querySelector('.random__btn')
+    if(btnEl) btnEl.addEventListener("click", () => fetchAndDisplay(loadingWidget));
+    
+    return {loadingWidget};
 };
 
-export const mount = () => {
-    const {loadingWidget} = init();
-    fetchAndDisplay(loadingWidget);
-}
+export const { unMount, hide, show } = toggleFunctionsFactory('random');
 
-export const unMount = () => {
-    const rem = document.querySelector('#random-section');
-    if(rem) rem.remove();
-}
-
+// Add and remove img each time random gif is requested due to delay in switching from old gif to new gif, even after src attribute loaded
 const addImg = (src = "", alt = "", classStr = "") => {
     const imgEl = createGifElement(src, alt, classStr)
-    el.appendChild(imgEl)
+    randomImgContainer.appendChild(imgEl)
 }
 
 const removeElement = () => {
-    const imgEl = el.querySelector("img");
-    if(imgEl) el.removeChild(imgEl)
+    const imgEl = randomImgContainer.querySelector("img");
+    if(imgEl) randomImgContainer.removeChild(imgEl)
 }
 
 const fetchAndDisplay = async (loadingWidget) => {
     const requestInit = {};
     loadingWidget.style.display = "flex";
     removeElement();
+    const gifSrcKey = isMobile ? "fixed_height_downsampled" : "fixed_height";
     
     fetchData('random', requestInit)
+        .then(res => {
+            if(res instanceof Error) throw res;
+            return res;
+        })
         .then(resJson => {
             const { data, meta } = resJson;
             const {images, title: alt} = data;
             const trueAlt = getIsEmptyString(alt) ? "Randomized gif from giffy" : alt;
-            const src = images.original.webp;
+            const src = images[gifSrcKey].webp;
             addImg(src, trueAlt, "random__img");
         })
         .then(() => {
@@ -88,5 +77,7 @@ const fetchAndDisplay = async (loadingWidget) => {
         })
         .catch(err => {
             console.log(err);
+            const errorWidget = createWidget('error');
+            randomImgContainer.appendChild(errorWidget);
         })
 }

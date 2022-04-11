@@ -1,21 +1,37 @@
-// 
-export const toggleShow = (element, shouldShow = false) => {
-    console.log(element)
-    console.log(shouldShow)
-}
-
-export const unMountFactory = (element) => {
-    return function(element) {
-        
+export const toggleFunctionsFactory = (elementHandle) => {
+    const selector = `#${elementHandle}-section`;
+    const unMount = () => {
+        const sectionEl = document.querySelector(selector);
+        if(sectionEl) sectionEl.remove();
     }
+    
+    const hide = () => {
+        const sectionEl = document.querySelector(selector);
+        if(sectionEl) {
+            sectionEl.setAttribute("aria-hidden", "true");
+            sectionEl.style.display = 'none'
+        };
+    }
+    
+    const show = () => {
+        const sectionEl = document.querySelector(selector);
+        if(sectionEl) {
+            sectionEl.setAttribute("aria-hidden", "false");
+            sectionEl.style.display = elementHandle === 'random' ? 'flex' : 'block';
+        }
+    }
+    return {unMount, hide, show}
 }
 
-export const createGifElement = (src = "", alt = "", classStr = "") => {
+export const createGifElement = (src = "", alt = "", classStr = "", idx = null, lazyLoadThreshold = 6) => {
     const imgEl = document.createElement('img');
     
     imgEl.setAttribute("src", src);
     imgEl.setAttribute("alt", alt);
     imgEl.setAttribute("class", classStr);
+
+    // Not lazy loading first images seems to improve load times of individual gifs
+    if(idx !== null && idx > lazyLoadThreshold) imgEl.setAttribute("loading", "lazy");
 
     return imgEl;
 }
@@ -50,6 +66,10 @@ export const createSVGFactory = (config) => {
             path = "M464 16c-17.67 0-32 14.31-32 32v74.09C392.1 66.52 327.4 32 256 32C161.5 32 78.59 92.34 49.58 182.2c-5.438 16.81 3.797 34.88 20.61 40.28c16.89 5.5 34.88-3.812 40.3-20.59C130.9 138.5 189.4 96 256 96c50.5 0 96.26 24.55 124.4 64H336c-17.67 0-32 14.31-32 32s14.33 32 32 32h128c17.67 0 32-14.31 32-32V48C496 30.31 481.7 16 464 16zM441.8 289.6c-16.92-5.438-34.88 3.812-40.3 20.59C381.1 373.5 322.6 416 256 416c-50.5 0-96.25-24.55-124.4-64H176c17.67 0 32-14.31 32-32s-14.33-32-32-32h-128c-17.67 0-32 14.31-32 32v144c0 17.69 14.33 32 32 32s32-14.31 32-32v-74.09C119.9 445.5 184.6 480 255.1 480c94.45 0 177.4-60.34 206.4-150.2C467.9 313 458.6 294.1 441.8 289.6z";
             break;
         }
+        case 'search': {
+            path = "M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7C401.8 87.79 326.8 13.32 235.2 1.723C99.01-15.51-15.51 99.01 1.724 235.2c11.6 91.64 86.08 166.7 177.6 178.9c53.8 7.189 104.3-6.236 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 0C515.9 484.7 515.9 459.3 500.3 443.7zM79.1 208c0-70.58 57.42-128 128-128s128 57.42 128 128c0 70.58-57.42 128-128 128S79.1 278.6 79.1 208z";
+            break;
+        }
         default: break;
     }
 
@@ -76,7 +96,8 @@ export const createSVGFactory = (config) => {
             return svgEl;
     }
 }
-        const createWidgetSVG = (config) => {
+
+const createWidgetSVG = (config) => {
     const nameSpace = "http://www.w3.org/2000/svg"
     const svgEl = document.createElementNS(nameSpace,'svg');
     const pathEl = document.createElementNS(nameSpace,'path');
@@ -105,7 +126,7 @@ export const createWidget = (config) => {
     const msg = document.createElement("span");
 
     // Set attributes
-    container.setAttribute("class", "widget-container widget--absolute");
+    container.setAttribute("class", "widget__container widget--absolute");
     container.style.zIndex = "2";
 
     // Set Leaves
@@ -140,6 +161,7 @@ export const constructElement = (tag, innerText = "", attributes = [], parent = 
     
 }
 
-export const getErrorWidget = () => {
-    
+export const hideElement = (element) => {
+    element.setAttribute('aria-hidden', 'true');
+    element.style.display = 'none';
 }
